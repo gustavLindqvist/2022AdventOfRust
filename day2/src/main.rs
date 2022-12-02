@@ -1,6 +1,6 @@
 fn main() {
+    //part 1
     let contents = include_str!("source.txt").split("\n");
-
     let mut sum = 0;
     for s in contents {
         match s {
@@ -16,11 +16,10 @@ fn main() {
             _ => sum += 0,
         }
     }
-
     println!("{}", sum);
 
+    //part 2
     let contents = include_str!("source.txt").split("\n");
-
     sum = 0;
     for s in contents {
         match s {
