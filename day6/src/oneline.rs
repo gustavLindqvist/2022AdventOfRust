@@ -1,1 +1,1 @@
-pub fn oneline(){[4,14].iter().for_each(|(&l)|{println!("{}",include_str!("source.txt").chars().collect::<Vec<char>>().windows(l).enumerate().filter(|(_,w)|w.iter().collect::<std::collections::HashSet<_>>().len()==l as usize).nth(0).unwrap().0+l)});}
+pub fn oneline(){[4,14].iter().for_each(|&l|println!("{}",include_str!("source.txt").chars().collect::<Vec<char>>().windows(l).enumerate().filter(|(_,w)|w.iter().collect::<std::collections::HashSet<_>>().len()==l as usize).nth(0).unwrap().0+l));}
