@@ -1,0 +1,1 @@
+pub fn oneline() {[4, 14].iter().for_each(|&l| {println!("{}",[include_str!("source.txt").chars().collect::<Vec<char>>()].iter().map(|s| (l..).map(|i| {s[i - l..i].iter().collect::<std::collections::HashSet<&char>>().len()}).enumerate().filter(|(_, v)| *v == l).nth(0).unwrap().0+ l).collect::<Vec<_>>()[0])});}
