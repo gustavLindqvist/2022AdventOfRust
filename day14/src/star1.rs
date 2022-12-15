@@ -6,19 +6,14 @@ pub fn star1() {
             .map(|s| s.split_once(',').unwrap())
             .map(|(s1, s2)| (s1.parse::<usize>().unwrap(), s2.parse::<usize>().unwrap()))
     }) {
-        let (mut last_x, mut last_y) = l.clone().next().unwrap();
+        let (mut l_x, mut l_y) = l.clone().next().unwrap();
         for (i_x, i_y) in l {
-            let (d_x, d_y) = (
-                i_x.max(last_x) - i_x.min(last_x),
-                i_y.max(last_y) - i_y.min(last_y),
-            );
-            let (f_x, f_y) = (last_x.min(i_x), last_y.min(i_y));
-            for x in f_x..=(f_x + d_x) {
-                for y in f_y..=(f_y + d_y) {
+            for x in l_x.min(i_x)..=l_x.max(i_x) {
+                for y in l_y.min(i_y)..=l_y.max(i_y) {
                     grid[x][y] = true;
                 }
             }
-            (last_x, last_y) = (i_x, i_y);
+            (l_x, l_y) = (i_x, i_y);
         }
     }
 
