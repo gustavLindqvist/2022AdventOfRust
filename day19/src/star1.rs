@@ -23,7 +23,7 @@ struct Bots {
 
 pub fn star1() {
     let mut prints = vec![];
-    include_str!("test.in")
+    include_str!("data.in")
         .lines()
         .map(|l| {
             l.split(" ")

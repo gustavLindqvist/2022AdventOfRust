@@ -1,24 +1,24 @@
 #[derive(Clone, Copy)]
 struct Blueprint {
-    ore: i32,
-    clay: i32,
-    obsi: (i32, i32),
-    geo: (i32, i32),
+    ore: u16,
+    clay: u16,
+    obsi: (u16, u16),
+    geo: (u16, u16),
 }
 
 #[derive(Clone)]
 struct Res {
-    ore: i32,
-    clay: i32,
-    obsi: i32,
-    geo: i32,
+    ore: u16,
+    clay: u16,
+    obsi: u16,
+    geo: u16,
 }
 #[derive(Clone)]
 struct Bots {
-    ore: i32,
-    clay: i32,
-    obsi: i32,
-    geo: i32,
+    ore: u16,
+    clay: u16,
+    obsi: u16,
+    geo: u16,
 }
 
 pub fn star2() {
@@ -28,9 +28,9 @@ pub fn star2() {
         .take(3)
         .map(|l| {
             l.split(" ")
-                .map(|i| i.parse::<i32>().unwrap_or(-1))
-                .filter(|&i| i != -1)
-                .collect::<Vec<i32>>()
+                .map(|i| i.parse::<u16>().unwrap_or(0))
+                .filter(|&i| i != 0)
+                .collect::<Vec<u16>>()
         })
         .for_each(|v| {
             prints.push(Blueprint {
@@ -58,50 +58,37 @@ pub fn star2() {
                     obsi: 0,
                     geo: 0,
                 },
-                &vec![false, false, false, false],
             )
         })
         .collect::<Vec<_>>();
     dbg!(sum.clone());
-    dbg!(sum.iter().fold(1, |x, y| x * y));
+    dbg!(sum.iter().fold(1, |x, &y| (x as u32) * (y as u32)));
 }
 
-fn value(time: i32, print: Blueprint, mut res: Res, bots: Bots, d: &Vec<bool>) -> i32 {
-    let mut denied = d.clone();
+fn value(time: u16, print: Blueprint, mut res: Res, bots: Bots) -> u16 {
     if time <= 0 {
         return res.geo;
     }
-    if time == 30 {
-        println!("work work");
-    }
     let mut g = 0;
     let mut build = vec![
-        !denied[0] & (res.ore >= print.ore),
-        !denied[1] & (res.ore >= print.clay),
-        !denied[2] & (res.ore >= print.obsi.0) & (res.clay >= print.obsi.1),
-        !denied[3] & (res.ore >= print.geo.0) & (res.obsi >= print.geo.1),
+        (res.ore >= print.ore),
+        (res.ore >= print.clay),
+        (res.ore >= print.obsi.0) & (res.clay >= print.obsi.1),
+        (res.ore >= print.geo.0) & (res.obsi >= print.geo.1),
     ];
 
     if build[3] | (bots.ore >= print.clay) | (time * print.clay <= bots.ore * time + res.ore) {
         build[0] = false;
-        denied[0] = true;
     }
     if build[3] | (bots.clay >= print.obsi.1) | (time * print.obsi.1 <= bots.clay * time + res.ore)
     {
         build[1] = false;
-        denied[1] = true;
     }
-    if denied[2]
-        | build[3]
-        | (bots.obsi >= print.geo.1)
-        | (time * print.clay <= bots.ore * time + res.ore)
-    {
+    if build[3] | (bots.obsi >= print.geo.1) | (time * print.clay <= bots.ore * time + res.ore) {
         build[2] = false;
-        denied[2] = true;
     }
-    if denied[3] | (time < 2) {
+    if time < 2 {
         build[3] = false;
-        denied[3] = true;
     }
 
     res.ore += bots.ore;
@@ -114,14 +101,14 @@ fn value(time: i32, print: Blueprint, mut res: Res, bots: Bots, d: &Vec<bool>) -
         let mut r = res.clone();
         b.ore += 1;
         r.ore -= print.ore;
-        g = g.max(value(time - 1, print, r, b, &denied));
+        g = g.max(value(time - 1, print, r, b));
     }
     if build[1] {
         let mut b = bots.clone();
         let mut r = res.clone();
         b.clay += 1;
         r.ore -= print.clay;
-        g = g.max(value(time - 1, print, r, b, &denied));
+        g = g.max(value(time - 1, print, r, b));
     }
     if build[2] {
         let mut b = bots.clone();
@@ -129,7 +116,7 @@ fn value(time: i32, print: Blueprint, mut res: Res, bots: Bots, d: &Vec<bool>) -
         b.obsi += 1;
         r.ore -= print.obsi.0;
         r.clay -= print.obsi.1;
-        g = g.max(value(time - 1, print, r, b, &denied));
+        g = g.max(value(time - 1, print, r, b));
     }
     if build[3] {
         let mut b = bots.clone();
@@ -137,10 +124,10 @@ fn value(time: i32, print: Blueprint, mut res: Res, bots: Bots, d: &Vec<bool>) -
         b.geo += 1;
         r.ore -= print.geo.0;
         r.obsi -= print.geo.1;
-        g = g.max(value(time - 1, print, r, b, &denied));
+        g = g.max(value(time - 1, print, r, b));
     }
 
-    g = g.max(value(time - 1, print, res, bots, &denied));
+    g = g.max(value(time - 1, print, res, bots));
 
     g
 }
